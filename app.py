@@ -5,23 +5,14 @@ import time
 app = Flask(__name__)
 application = app
 
-# Armazenamento para chave e seu timestamp
-key_data = {
-    "key": None,
-    "timestamp": None
-}
+key_data = {"key": None, "timestamp": None}
 
-# Função para gerar uma chave aleatória
 def generate_key():
-    return secrets.token_hex(16)  # Gera uma chave hexadecimal de 16 bytes
+    return secrets.token_hex(16)
 
-# Função para verificar se a chave ainda é válida
 def is_key_valid():
     if key_data["key"] and key_data["timestamp"]:
-        current_time = time.time()
-        # Verifica se a chave ainda é válida (5 minutos = 300 segundos)
-        if current_time - key_data["timestamp"] <= 300:
-            return True
+        return time.time() - key_data["timestamp"] <= 300
     return False
 
 @app.route('/')
@@ -33,8 +24,8 @@ def home():
     <!DOCTYPE html>
     <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Access Key</title>
         <style>
             body {{
@@ -45,32 +36,88 @@ def home():
                 margin: 0;
                 position: relative;
                 flex-direction: column;
+                font-family: Arial, sans-serif;
+                background: #f9f9f9;
             }}
+
+            .author-banner {{
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background-color: #007BFF; /* azul */
+                color: black;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-weight: bold;
+                font-size: 18px;
+                user-select: none;
+            }}
+
+            .telegram-banner {{
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: #007BFF; /* azul */
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-weight: bold;
+                font-size: 16px;
+                user-select: none;
+            }}
+            .telegram-banner a {{
+                color: black;
+                text-decoration: none;
+                font-weight: bold;
+            }}
+            .telegram-banner a:hover {{
+                text-decoration: underline;
+            }}
+
             .content {{
                 text-align: center;
                 margin-top: 20px;
             }}
-            .author {{
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                color: #000;
-                font-size: 18px;
+
+            .key-container {{
+                background-color: #007BFF; /* azul */
+                padding: 12px 20px;
+                border-radius: 8px;
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 15px;
+                user-select: none;
             }}
-            .banner-telegram {{
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                background-color: #0088cc;
-                padding: 10px;
-                border-radius: 5px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            }}
-            .banner-telegram a {{
-                color: #ffcc00;
-                text-decoration: none;
+
+            .key-box {{
+                background-color: white;
+                color: black;
+                font-size: 20px;
                 font-weight: bold;
+                padding: 8px 15px;
+                border-radius: 5px;
+                min-width: 320px;
+                font-family: monospace;
+                user-select: text;
+                overflow-wrap: break-word;
             }}
+
+            button.copy-btn {{
+                background-color: black;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+                user-select: none;
+            }}
+
+            button.copy-btn:hover {{
+                background-color: #333;
+            }}
+
             .ad-banner {{
                 width: 728px;
                 height: 90px;
@@ -84,13 +131,17 @@ def home():
         </style>
     </head>
     <body>
-        <div class="author">Autor = Keno Venas</div>
-        <div class="banner-telegram">
-            <a href="https://t.me/+Mns6IsONSxliZDkx" target="_blank">Grupo do Telegram</a>
+        <div class="author-banner">Autor: Keno Venas</div>
+        <div class="telegram-banner">
+            <a href="https://t.me/+Mns6IsONSxliZDkx" target="_blank" rel="noopener noreferrer">Grupo do Telegram</a>
         </div>
+
         <div class="content">
             <h1>Access Key</h1>
-            <p>{key_data["key"]}</p>
+            <div class="key-container">
+                <div id="key-box" class="key-box">{key_data["key"]}</div>
+                <button class="copy-btn" onclick="copyKey()">Copiar</button>
+            </div>
         </div>
 
         <!-- Script da Hydro -->
@@ -98,7 +149,6 @@ def home():
             window.Hydro_tagId = "ab51bfd4-d078-4c04-a17b-ccfcfe865175";
         </script>
         <script id="hydro_script" src="https://track.hydro.online/"></script>
-
 
         <!-- anuncios -->
         <div class="ad-banner">
@@ -113,8 +163,18 @@ def home():
             </script>
             <script type="text/javascript" src="//spiceoptimistic.com/78713e6d4e36d5a549e9864674183de6/invoke.js"></script>
         </div>
-<script type='text/javascript' src='//spiceoptimistic.com/1c/66/88/1c668878f3f644b95a54de17911c2ff5.js'></script>
-       
+        <script type='text/javascript' src='//spiceoptimistic.com/1c/66/88/1c668878f3f644b95a54de17911c2ff5.js'></script>
+
+        <script>
+            function copyKey() {{
+                const keyText = document.getElementById('key-box').innerText;
+                navigator.clipboard.writeText(keyText).then(() => {{
+                    alert('Chave copiada!');
+                }}).catch(err => {{
+                    alert('Erro ao copiar a chave.');
+                }});
+            }}
+        </script>
     </body>
     </html>
     '''
