@@ -13,13 +13,12 @@ key_data = {
 
 # Função para gerar uma chave aleatória
 def generate_key():
-    return secrets.token_hex(16)  # Gera uma chave hexadecimal de 16 bytes
+    return secrets.token_hex(16)
 
 # Função para verificar se a chave ainda é válida
 def is_key_valid():
     if key_data["key"] and key_data["timestamp"]:
         current_time = time.time()
-        # Verifica se a chave ainda é válida (5 minutos = 300 segundos)
         if current_time - key_data["timestamp"] <= 300:
             return True
     return False
@@ -29,9 +28,10 @@ def home():
     if not is_key_valid():
         key_data["key"] = generate_key()
         key_data["timestamp"] = time.time()
+
     return f'''
     <!DOCTYPE html>
-    <html lang="pt-BR">
+    <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,71 +43,65 @@ def home():
                 align-items: center;
                 height: 100vh;
                 margin: 0;
-                position: relative;
                 flex-direction: column;
+                background-color: #ffffff;
                 font-family: Arial, sans-serif;
-                background-color: #fff;
             }}
-            .author {{
+            .author-banner {{
                 position: absolute;
                 top: 10px;
                 left: 10px;
-                background-color: #007BFF; /* azul */
-                color: #000; /* preto */
-                padding: 5px 10px;
+                background-color: #007BFF;
+                color: black;
+                padding: 10px 15px;
                 border-radius: 5px;
                 font-weight: bold;
-                font-size: 18px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             }}
-            .banner-telegram {{
+            .telegram-banner {{
                 position: absolute;
                 top: 10px;
                 right: 10px;
-                background-color: #007BFF; /* azul */
-                padding: 5px 10px;
+                background-color: #007BFF;
+                color: black;
+                padding: 10px 15px;
                 border-radius: 5px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
                 font-weight: bold;
-                font-size: 16px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             }}
-            .banner-telegram a {{
-                color: #000; /* preto */
+            .telegram-banner a {{
+                color: black;
                 text-decoration: none;
+                font-weight: bold;
             }}
             .content {{
                 text-align: center;
-                margin-top: 20px;
+                margin-top: 60px;
             }}
             .key-container {{
-                margin-top: 15px;
-                background-color: #007BFF; /* azul */
-                display: inline-flex;
+                display: flex;
                 align-items: center;
-                padding: 10px;
-                border-radius: 5px;
+                justify-content: center;
                 gap: 10px;
+                margin-top: 20px;
             }}
             #key-box {{
-                background-color: #fff; /* branco */
-                color: #000; /* preto */
-                font-weight: bold;
-                font-size: 24px;
-                padding: 10px 20px;
+                background-color: white;
+                color: black;
+                border: 2px solid #007BFF;
+                padding: 10px 15px;
                 border-radius: 5px;
+                font-size: 18px;
                 user-select: all;
             }}
             #copy-btn {{
-                cursor: pointer;
-                background-color: #0056b3;
-                color: white;
+                padding: 10px 15px;
+                background-color: #007BFF;
+                color: black;
                 border: none;
                 border-radius: 5px;
-                padding: 10px 15px;
-                font-size: 16px;
-                transition: background-color 0.3s ease;
-            }}
-            #copy-btn:hover {{
-                background-color: #003d80;
+                cursor: pointer;
+                font-weight: bold;
             }}
             .ad-banner {{
                 width: 728px;
@@ -122,17 +116,41 @@ def home():
         </style>
     </head>
     <body>
-        <div class="author">Autor = Keno Venas</div>
-        <div class="banner-telegram">
-            <a href="https://t.me/+Mns6IsONSxliZDkx" target="_blank" rel="noopener noreferrer">Grupo do Telegram</a>
+        <div class="author-banner">Autor: Keno Venas</div>
+        <div class="telegram-banner">
+            <a href="https://t.me/+Mns6IsONSxliZDkx" target="_blank">Grupo do Telegram</a>
         </div>
         <div class="content">
             <h1>Access Key</h1>
             <div class="key-container">
                 <div id="key-box">{key_data["key"]}</div>
-                <button id="copy-btn" onclick="copyKey()">Copiar</button>
+                <button id="copy-btn">Copiar</button>
             </div>
         </div>
+
+        <!-- Script do botão copiar -->
+        <script>
+            document.getElementById('copy-btn').addEventListener('click', function() {{
+                const keyElement = document.getElementById('key-box');
+                const text = keyElement.textContent;
+
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.left = '-9999px';
+                document.body.appendChild(textarea);
+                textarea.select();
+
+                try {{
+                    const successful = document.execCommand('copy');
+                    alert(successful ? 'Chave copiada!' : 'Erro ao copiar.');
+                }} catch (err) {{
+                    alert('Erro ao copiar a chave.');
+                }}
+
+                document.body.removeChild(textarea);
+            }});
+        </script>
 
         <!-- Script da Hydro -->
         <script id="hydro_config" type="text/javascript">
@@ -140,7 +158,7 @@ def home():
         </script>
         <script id="hydro_script" src="https://track.hydro.online/"></script>
 
-        <!-- anuncios -->
+        <!-- anúncios -->
         <div class="ad-banner">
             <script type="text/javascript">
                 atOptions = {{
@@ -154,41 +172,6 @@ def home():
             <script type="text/javascript" src="//spiceoptimistic.com/78713e6d4e36d5a549e9864674183de6/invoke.js"></script>
         </div>
         <script type='text/javascript' src='//spiceoptimistic.com/1c/66/88/1c668878f3f644b95a54de17911c2ff5.js'></script>
-
-        <script>
-            function copyKey() {{
-                const keyText = document.getElementById('key-box').innerText;
-                if (navigator.clipboard && window.isSecureContext) {{
-                    navigator.clipboard.writeText(keyText).then(() => {{
-                        alert('Chave copiada!');
-                    }}).catch(() => {{
-                        alert('Erro ao copiar a chave.');
-                    }});
-                }} else {{
-                    // fallback para navegadores que não suportam Clipboard API ou não estão em HTTPS
-                    const textArea = document.createElement("textarea");
-                    textArea.value = keyText;
-                    // evitar que o textarea apareça na tela
-                    textArea.style.position = "fixed";
-                    textArea.style.left = "-9999px";
-                    document.body.appendChild(textArea);
-                    textArea.focus();
-                    textArea.select();
-
-                    try {{
-                        const successful = document.execCommand('copy');
-                        if (successful) {{
-                            alert('Chave copiada!');
-                        }} else {{
-                            alert('Erro ao copiar a chave.');
-                        }}
-                    }} catch (err) {{
-                        alert('Erro ao copiar a chave.');
-                    }}
-                    document.body.removeChild(textArea);
-                }}
-            }}
-        </script>
     </body>
     </html>
     '''
