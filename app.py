@@ -1,18 +1,22 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # <-- IMPORTANTE PARA LIBERAR ACESSO EXTERNO
 import secrets
 import time
 
 app = Flask(__name__)
-application = app
+CORS(app)  # <-- HABILITA CORS PARA PERMITIR ACESSO DE OUTRAS ORIGENS (EX: Tampermonkey)
 
+# Dados da chave atual
 key_data = {
     "key": None,
     "timestamp": None
 }
 
+# Gera uma nova chave aleatória
 def generate_key():
     return secrets.token_hex(16)
 
+# Verifica se a chave ainda é válida (duração: 5 minutos)
 def is_key_valid():
     if key_data["key"] and key_data["timestamp"]:
         return time.time() - key_data["timestamp"] <= 300
@@ -20,10 +24,12 @@ def is_key_valid():
 
 @app.route('/')
 def home():
+    # Se não houver chave válida, gera uma nova
     if not is_key_valid():
         key_data["key"] = generate_key()
         key_data["timestamp"] = time.time()
 
+    # Página HTML com a chave exibida
     return f'''
     <!DOCTYPE html>
     <html lang="pt-BR">
@@ -135,7 +141,7 @@ def home():
 @app.route('/validate', methods=['POST'])
 def validate_key():
     data = request.get_json()
-    if 'key' in data and data['key'] == key_data['key'] and is_key_valid():
+    if data and 'key' in data and data['key'] == key_data['key'] and is_key_valid():
         return jsonify({"valid": True}), 200
     return jsonify({"valid": False}), 401
 
