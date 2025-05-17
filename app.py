@@ -35,7 +35,7 @@ def home():
     <html lang="pt-BR">
     <head>
         <meta charset="UTF-8">
-        <title>Acesse Key</title>
+        <title>Gerador de Key</title>
         <style>
             body {{
                 margin: 0;
